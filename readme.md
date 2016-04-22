@@ -13,10 +13,11 @@
 		恢复： git checkout -- 文件名
 
 
+#####进度
 http://www.tuicool.com/articles/BRjmmqM 实验 snort安装配置与规则编写
 晚上看看这个`(Finish,2016/4/20)`
 
 
-思路：<br>
+思路：
 * 1.打印出包解码器之后的数据包，看看有没有解码实时数据
 * 2.在预处理器中处理
