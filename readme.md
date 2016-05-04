@@ -22,3 +22,5 @@
 2. 思路(2016/4/22)：
  * 打印出包解码器之后的数据包，看看有没有解码实时数据
  * 在预处理器中处理
+
+3. libcap使用 http://blog.csdn.net/htttw/article/details/7521053
