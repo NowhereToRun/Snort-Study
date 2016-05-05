@@ -11,7 +11,7 @@ int main()
 		printf("Error in pcap_findalldevs:%s\n",errbuf);
 		exit(1);
 	}
-	/*显示列表的相应字段的内容*/
+	/*鏄剧ず鍒楄〃鐨勭浉搴斿瓧娈电殑鍐呭*/
 	for (d=alldevs;d;d=d->next){
 		printf("%d.%s",++i,d->name);
 		if(d->description)
