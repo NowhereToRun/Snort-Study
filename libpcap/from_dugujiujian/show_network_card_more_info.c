@@ -59,8 +59,19 @@ void ifprint(pcap_if_t *d)
 				printf("\tAddress Family Name:AF_INET\n");
 				if (a->addr)
 					printf("\tAddress: %s\n",iptos(((struct sockaddr_in *)a->addr)->sin_addr.s_addr));
+				if (a->netmask)
+					printf("\tNetmask: %s\n",iptos(((struct sockaddr_in *)a->netmask)->sin_addr.s_addr));
+				if (a->broadaddr)
+					printf("\tBroadcast Address: %s\n",iptos(((struct sockaddr_in *)a->broadaddr)->sin_addr.s_addr));
+				if (a->dstaddr)
+					printf("\tDestination Address: %s\n",iptos(((struct sockaddr_in *)a->dstaddr)->sin_addr.s_addr));
+				break;
+			default:
+				printf("\tAddress Family Name:Unknown\n");
+				break;
 		}
 	}
+	printf("\n");
 }
 
 int main(){
