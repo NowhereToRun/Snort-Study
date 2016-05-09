@@ -1,6 +1,3 @@
-/* Simple Sniffer	*/
-/* To compile: gcc simplesniffer.c -o simplesniffer -lpcap */
-
 #include <pcap.h>
 #include <string.h>
 #include <stdlib.h>
