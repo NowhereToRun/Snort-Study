@@ -73,12 +73,12 @@ int main(int argc,char **argv)
 	/* At this point, we don't need any more the device list. Free it */
 	pcap_freealldevs(alldevs);
 	/* start the capture */
-	pcap_loop(adhandle, 0, packet_handler, NULL);
+	pcap_loop(adhandle, 0, packet_handler,(unsigned char *)dumpfile);
 	return 0;
 }
 
 void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data)
 {
-	printf("-----------");
+	//printf("-----------");
 	pcap_dump(param,header,pkt_data);
 }
