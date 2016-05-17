@@ -553,7 +553,6 @@ void UpdateDecodeRulesArray(uint32_t sid, int value, int all_rules)
 // enabled, the normalizer assumes that the encoding is structurally sound
 static inline void PushLayer(PROTO_ID type, Packet* p, const uint8_t* hdr, uint32_t len)
 {
-	printf("p->next_layer %d\n",p->next_layer);
 	printf("PROTO_ID %d\n",type);
     if ( p->next_layer < LAYER_MAX )
     {
@@ -611,10 +610,11 @@ void DecodeARP(const uint8_t * pkt, uint32_t len, Packet * p)
 void DecodeProfinet(const uint8_t * pkt, uint32_t len, Packet * p)
 {
     pc.profinet++;
-	printf("++_________________++\n");
-	p->data = pkt;
+	p->proh = (PROFINETHdr *) pkt;
+	//printf("++_________________++\n");
+	p->data = pkt; //这里应该有问题 应该去掉包头FrameID
     p->dsize = (uint16_t)len;
-	PushLayer(PROTO_PROFINET, p, pkt, 0);
+	PushLayer(PROTO_PROFINET, p, pkt, sizeof(*p->proh));
     //p->proto_bits |= PROTO_BIT__ARP;
     //PushLayer(PROTO_ARP, p, pkt, sizeof(*p->ah));
 } 

@@ -1851,8 +1851,15 @@ static DAQ_Verdict PacketCallback(
 
 static void PrintPacket(Packet *p)
 {
+	
+	if (p->proh != NULL)
+	{
+		printf("hhhhhhhhhhhhhhhhhhhhhhhhhh\n");
+		PrintProfinetPkt(stdout, p);
+	} 
     if (p->iph != NULL)
     {
+		printf("Here\n\n");
         PrintIPPkt(stdout, GET_IPH_PROTO((p)), p);
     }
 #ifndef NO_NON_ETHER_DECODER
@@ -1890,7 +1897,7 @@ DAQ_Verdict ProcessPacket(
         p->fragtracker = ft;
         Encode_SetPkt(p);
     }
-	printf("p->proto_bits  %x\n",p->proto_bits);
+	//printf("p->proto_bits  %x\n",p->proto_bits);
     if ( !p->proto_bits )
 	{
 		p->proto_bits = PROTO_BIT__OTHER;
@@ -1901,7 +1908,7 @@ DAQ_Verdict ProcessPacket(
 		p->proto_bits &= ~PROTO_BIT__IP;
 	}
         
-	printf("p->proto_bits  %x\n",p->proto_bits);
+	//printf("p->proto_bits  %x\n",p->proto_bits);
     /***** Policy specific decoding should into this function *****/
     p->configPolicyId = snort_conf->targeted_policies[ getNapRuntimePolicy() ]->configPolicyId;
 

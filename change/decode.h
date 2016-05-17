@@ -1030,6 +1030,14 @@ typedef struct _EtherHdr
 
 } EtherHdr;
 
+/*
+ * Profinet header
+ */
+
+typedef struct _PROFINETHdr
+{
+    uint16_t frame_id;      /* Profinet FrameID */
+} PROFINETHdr;
 
 #ifndef NO_NON_ETHER_DECODER
 /*
@@ -1681,6 +1689,7 @@ typedef struct _Packet
     uint32_t *mpls;
     const CiscoMetaHdr *cmdh;                /* Cisco Metadata Header */
 
+	const PROFINETHdr *proh;
     const IPHdr *iph, *orig_iph;/* and orig. headers for ICMP_*_UNREACH family */
     const IPHdr *inner_iph;     /* if IP-in-IP, this will be the inner IP header */
     const IPHdr *outer_iph;     /* if IP-in-IP, this will be the outer IP header */
