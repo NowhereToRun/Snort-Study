@@ -57,6 +57,7 @@ void PrintGREHeader(FILE *, Packet *);
 void PrintOuterIPHeader(FILE *, Packet *);
 #endif
 void PrintIPHeader(FILE *, Packet *);
+void PrintProfinetHeader(FILE *, Packet *);
 void PrintTCPHeader(FILE *, Packet *);
 void PrintTcpOptions(FILE *, Packet *);
 void PrintIpOptions(FILE *, Packet *);

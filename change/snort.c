@@ -1854,7 +1854,6 @@ static void PrintPacket(Packet *p)
 	
 	if (p->proh != NULL)
 	{
-		printf("hhhhhhhhhhhhhhhhhhhhhhhhhh\n");
 		PrintProfinetPkt(stdout, p);
 	} 
     if (p->iph != NULL)

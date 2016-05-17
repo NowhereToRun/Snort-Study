@@ -464,53 +464,23 @@ void PrintProfinetPkt(FILE * fp, Packet * p)
     {
         Print2ndHeader(fp, p);
     }
-
-    //PrintIPHeader(fp, p);
-	/*
-    if ((p->dsize > 0) && obApi->payloadObfuscationRequired(p)
-            && (PrintObfuscatedData(fp, p) == 0))
-    {
-        return;
-    }
-	*/
+	PrintProfinetHeader(fp, p);
     /* dump the application layer data */
-	/*
     if (ScOutputAppData() && !ScVerboseByteDump())
     {
         if (ScOutputCharData())
         {
             PrintCharData(fp, (char*) p->data, p->dsize);
-            if(!IsJSNormData(p->ssnptr))
-            {
-                fprintf(fp, "%s\n", "Normalized JavaScript for this packet");
-                PrintCharData(fp, (const char*)file_data_ptr.data, file_data_ptr.len);
-            }
-            else if(!IsGzipData(p->ssnptr))
-            {
-                fprintf(fp, "%s\n", "Decompressed Data for this packet");
-                PrintCharData(fp, (const char*)file_data_ptr.data, file_data_ptr.len);
-            }
         }
         else
         {
             PrintNetData(fp, p->data, p->dsize, NULL);
-            if(!IsJSNormData(p->ssnptr))
-            {
-                fprintf(fp, "%s\n", "Normalized JavaScript for this packet");
-                PrintNetData(fp, file_data_ptr.data, file_data_ptr.len, NULL);
-            }
-            else if(!IsGzipData(p->ssnptr))
-            {
-                fprintf(fp, "%s\n", "Decompressed Data for this packet");
-                PrintNetData(fp, file_data_ptr.data, file_data_ptr.len, NULL);
-            }
         }
     }
     else if (ScVerboseByteDump())
     {
         PrintNetData(fp, p->pkt, p->pkth->caplen, p);
     }
-	*/
     fprintf(fp, "=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+"
             "=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n");
 
@@ -627,8 +597,11 @@ void PrintIPPkt(FILE * fp, int type, Packet * p)
     }
 
     /* dump the application layer data */
+	printf("ScOutputAppData %d\n",ScOutputAppData());
+	printf("ScVerboseByteDump %d\n",ScVerboseByteDump());
     if (ScOutputAppData() && !ScVerboseByteDump())
     {
+		printf("ScOutputCharData %d\n",ScOutputCharData());
         if (ScOutputCharData())
         {
             PrintCharData(fp, (char*) p->data, p->dsize);
@@ -1135,6 +1108,263 @@ void PrintIPHeader(FILE * fp, Packet * p)
                 (p->frag_offset & 0x1FFF),
                 GET_IP_PAYLEN(p));
     }
+}
+
+/****************************************************************************
+ *
+ * Function: PrintProfinetHeader(FILE *)
+ *
+ * Purpose: Dump the Profinet header info to the specified stream
+ *
+ * Arguments: fp => stream to print to
+ *
+ * Returns: void function
+ *
+ ***************************************************************************/
+void PrintProfinetHeader(FILE * fp, Packet * p)
+{
+	/*
+    if(!IPH_IS_VALID(p))
+    {
+        fprintf(fp, "IP header truncated\n");
+        return;
+    }
+	
+    PrintIpAddrs(fp, p);
+	*/
+	/*
+    if (!ScOutputDataLink())
+    {
+        fputc('\n', fp);
+    }
+    else
+    {
+        fputc(' ', fp);
+    }
+
+    fprintf(fp, "%s TTL:%u TOS:0x%X ID:%u IpLen:%u DgmLen:%u",
+            protocol_names[GET_IPH_PROTO(p)],
+            GET_IPH_TTL(p),
+            GET_IPH_TOS(p),
+            IS_IP6(p) ? ntohl(GET_IPH_ID(p)) : ntohs((uint16_t)GET_IPH_ID(p)),
+            GET_IPH_HLEN(p) << 2,
+            GET_IP_DGMLEN(p));
+	*/
+	uint16_t frame_id;
+	//guint16      u16CycleCounter;
+    const char *pszProtAddInfo;
+    const char *pszProtShort;
+    const char *pszProtSummary;
+    const char *pszProtComment;
+    char        szFieldSummary[100];
+    int         bCyclic;
+	frame_id = ntohs(p->proh->frame_id);
+	    if (frame_id <= 0x001F) {
+        pszProtShort    = "PN-RT";
+        pszProtAddInfo  = "reserved, ";
+        pszProtSummary  = "Real-Time";
+        pszProtComment  = "0x0000-0x001F: Reserved ID";
+        bCyclic         = 0;
+    } else if (frame_id <= 0x0021) {
+        pszProtShort    = "PN-PTCP";
+        pszProtAddInfo  = "Synchronization, ";
+        pszProtSummary  = "Real-Time";
+        pszProtComment  = "0x0020-0x0021: Real-Time: Sync (with follow up)";
+        bCyclic         = 0;
+    } else if (frame_id <= 0x007F) {
+        pszProtShort    = "PN-RT";
+        pszProtAddInfo  = "reserved, ";
+        pszProtSummary  = "Real-Time";
+        pszProtComment  = "0x0022-0x007F: Reserved ID";
+        bCyclic         = 0;
+    } else if (frame_id <= 0x0081) {
+        pszProtShort    = "PN-PTCP";
+        pszProtAddInfo  = "Synchronization, ";
+        pszProtSummary  = "Isochronous-Real-Time";
+        pszProtComment  = "0x0080-0x0081: Real-Time: Sync (without follow up)";
+        bCyclic         = 0;
+    } else if (frame_id <= 0x00FF) {
+        pszProtShort    = "PN-RT";
+        pszProtAddInfo  = "reserved, ";
+        pszProtSummary  = "Real-Time";
+        pszProtComment  = "0x0082-0x00FF: Reserved ID";
+        bCyclic         = 0;
+    } else if (frame_id <= 0x6FF) {
+        pszProtShort    = "PN-RTC3";
+        pszProtAddInfo  = "RTC3, ";
+        pszProtSummary  = "Isochronous-Real-Time";
+        pszProtComment  = "0x0100-0x06FF: RED: Real-Time(class=3): non redundant, normal or DFP";
+        bCyclic         = 1;
+    } else if (frame_id <= 0x0FFF) {
+        pszProtShort    = "PN-RTC3";
+        pszProtAddInfo  = "RTC3, ";
+        pszProtSummary  = "Isochronous-Real-Time";
+        pszProtComment  = "0x0700-0x0FFF: RED: Real-Time(class=3): redundant, normal or DFP";
+        bCyclic         = 1;
+    } else if (frame_id <= 0x7FFF) {
+        pszProtShort    = "PN-RT";
+        pszProtAddInfo  = "reserved, ";
+        pszProtSummary  = "Real-Time";
+        pszProtComment  = "0x1000-0x7FFF: Reserved ID";
+        bCyclic         = 0;
+    } else if (frame_id <= 0xBBFF) {
+        pszProtShort    = "PN-RTC1";
+        pszProtAddInfo  = "RTC1, ";
+        pszProtSummary  = "cyclic Real-Time";
+        pszProtComment  = "0x8000-0xBBFF: Real-Time(class=1 unicast): non redundant, normal";
+        bCyclic         = 1;
+    } else if (frame_id <= 0xBFFF) {
+        pszProtShort    = "PN-RTC1";
+        pszProtAddInfo  = "RTC1, ";
+        pszProtSummary  = "cyclic Real-Time";
+        pszProtComment  = "0xBC00-0xBFFF: Real-Time(class=1 multicast): non redundant, normal";
+        bCyclic         = 1;
+    } else if (frame_id <= 0xF7FF) {
+        /* check if udp frame on PNIO port */
+		/*
+        if (pinfo->destport == 0x8892)
+        { 	//UDP frame
+            pszProtShort = "PN-RTCUDP,";
+            pszProtAddInfo = "RT_CLASS_UDP, ";
+            pszProtComment = "0xC000-0xF7FF: Real-Time(UDP unicast): Cyclic";
+        }
+        else
+        { 	//layer 2 frame
+            pszProtShort = "PN-RT";
+            pszProtAddInfo = "RTC1(legacy), ";
+            pszProtComment = "0xC000-0xF7FF: Real-Time(class=1 unicast): Cyclic";
+        } */
+		pszProtShort = "PN-RT";
+        pszProtAddInfo = "RTC1(legacy), ";
+        pszProtComment = "0xC000-0xF7FF: Real-Time(class=1 unicast): Cyclic";
+        pszProtSummary  = "cyclic Real-Time";
+        bCyclic         = 1;
+    } else if (frame_id <= 0xFBFF) {
+		/*
+        if (pinfo->destport == 0x8892)
+        {   //UDP frame
+            pszProtShort = "PN-RTCUDP,";
+            pszProtAddInfo = "RT_CLASS_UDP, ";
+            pszProtComment = "0xF800-0xFBFF:: Real-Time(UDP multicast): Cyclic";
+        }
+        else
+        {   //layer 2 frame
+            pszProtShort = "PN-RT";
+            pszProtAddInfo = "RTC1(legacy), ";
+            pszProtComment = "0xF800-0xFBFF: Real-Time(class=1 multicast): Cyclic";
+         }*/
+		pszProtShort = "PN-RT";
+        pszProtAddInfo = "RTC1(legacy), ";
+        pszProtComment = "0xF800-0xFBFF: Real-Time(class=1 multicast): Cyclic";
+        pszProtSummary  = "cyclic Real-Time";
+        bCyclic         = 1;
+    } else if (frame_id <= 0xFDFF) {
+        pszProtShort    = "PN-RTA";
+        pszProtAddInfo  = "Reserved, ";
+        pszProtSummary  = "acyclic Real-Time";
+        pszProtComment  = "0xFC00-0xFDFF: Reserved";
+        bCyclic         = 0;
+        if (frame_id == 0xfc01) {
+            pszProtShort    = "PN-RTA";
+            pszProtAddInfo  = "Alarm High, ";
+            pszProtSummary  = "acyclic Real-Time";
+            pszProtComment  = "Real-Time: Acyclic PN-IO Alarm high priority";
+        }
+
+    } else if (frame_id <= 0xFEFF) {
+        pszProtShort    = "PN-RTA";
+        pszProtAddInfo  = "Reserved, ";
+        pszProtSummary  = "acyclic Real-Time";
+        pszProtComment  = "0xFE00-0xFEFF: Real-Time: Reserved";
+        bCyclic         = 0;
+        if (frame_id == 0xFE01) {
+            pszProtShort    = "PN-RTA";
+            pszProtAddInfo  = "Alarm Low, ";
+            pszProtSummary  = "acyclic Real-Time";
+            pszProtComment  = "Real-Time: Acyclic PN-IO Alarm low priority";
+        }
+        if (frame_id == 0xfefc) {
+            pszProtShort    = "PN-RTA";
+            pszProtAddInfo  = "";
+            pszProtSummary  = "acyclic Real-Time";
+            pszProtComment  = "Real-Time: DCP (Dynamic Configuration Protocol) hello";
+        }
+        if (frame_id == 0xfefd) {
+            pszProtShort    = "PN-RTA";
+            pszProtAddInfo  = "";
+            pszProtSummary  = "acyclic Real-Time";
+            pszProtComment  = "Real-Time: DCP (Dynamic Configuration Protocol) get/set";
+        }
+        if (frame_id == 0xfefe) {
+            pszProtShort    = "PN-RTA";
+            pszProtAddInfo  = "";
+            pszProtSummary  = "acyclic Real-Time";
+            pszProtComment  = "Real-Time: DCP (Dynamic Configuration Protocol) identify multicast request";
+        }
+        if (frame_id == 0xfeff) {
+            pszProtShort    = "PN-RTA";
+            pszProtAddInfo  = "";
+            pszProtSummary  = "acyclic Real-Time";
+            pszProtComment  = "Real-Time: DCP (Dynamic Configuration Protocol) identify response";
+        }
+    } else if (frame_id <= 0xFF01) {
+        pszProtShort    = "PN-PTCP";
+        pszProtAddInfo  = "RTA Sync, ";
+        pszProtSummary  = "acyclic Real-Time";
+        pszProtComment  = "0xFF00-0xFF01: PTCP Announce";
+        bCyclic         = 0;
+    } else if (frame_id <= 0xFF1F) {
+        pszProtShort    = "PN-PTCP";
+        pszProtAddInfo  = "RTA Sync, ";
+        pszProtSummary  = "acyclic Real-Time";
+        pszProtComment  = "0xFF02-0xFF1F: Reserved";
+        bCyclic         = 0;
+    } else if (frame_id <= 0xFF21) {
+        pszProtShort    = "PN-PTCP";
+        pszProtAddInfo  = "Follow Up, ";
+        pszProtSummary  = "acyclic Real-Time";
+        pszProtComment  = "0xFF20-0xFF21: PTCP Follow Up";
+        bCyclic         = 0;
+    } else if (frame_id <= 0xFF22) {
+        pszProtShort    = "PN-PTCP";
+        pszProtAddInfo  = "Follow Up, ";
+        pszProtSummary  = "acyclic Real-Time";
+        pszProtComment  = "0xFF22-0xFF3F: Reserved";
+        bCyclic         = 0;
+    } else if (frame_id <= 0xFF43) {
+        pszProtShort    = "PN-PTCP";
+        pszProtAddInfo  = "Delay, ";
+        pszProtSummary  = "acyclic Real-Time";
+        pszProtComment  = "0xFF40-0xFF43: Acyclic Real-Time: Delay";
+        bCyclic         = 0;
+    } else if (frame_id <= 0xFF7F) {
+        pszProtShort    = "PN-RT";
+        pszProtAddInfo  = "Reserved, ";
+        pszProtSummary  = "Real-Time";
+        pszProtComment  = "0xFF44-0xFF7F: reserved ID";
+        bCyclic         = 0;
+    } else if (frame_id <= 0xFF8F) {
+        pszProtShort    = "PN-RT";
+        pszProtAddInfo  = "";
+        pszProtSummary  = "Fragmentation";
+        pszProtComment  = "0xFF80-0xFF8F: Fragmentation";
+        bCyclic         = 0;
+    } else {
+        pszProtShort    = "PN-RT";
+        pszProtAddInfo  = "Reserved, ";
+        pszProtSummary  = "Real-Time";
+        pszProtComment  = "0xFF90-0xFFFF: reserved ID";
+        bCyclic         = 0;
+    }
+    fprintf(fp, "PROFINET %s, %s%s\nID:%04x, %s",
+            pszProtSummary,
+            pszProtAddInfo,
+			pszProtShort,
+            frame_id,
+            pszProtComment
+            );
+    fputc('\n', fp);
+
 }
 
 #ifdef GRE
