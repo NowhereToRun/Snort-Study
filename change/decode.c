@@ -611,7 +611,6 @@ void DecodeProfinet(const uint8_t * pkt, uint32_t len, Packet * p)
 {
     pc.profinet++;
 	p->proh = (PROFINETHdr *) pkt;
-	//printf("++_________________++\n");
 	p->data = pkt; //这里也许有问题 应该去掉包头FrameID
     p->dsize = (uint16_t)len;
 	PushLayer(PROTO_PROFINET, p, pkt, sizeof(*p->proh));
