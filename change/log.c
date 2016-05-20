@@ -597,11 +597,8 @@ void PrintIPPkt(FILE * fp, int type, Packet * p)
     }
 
     /* dump the application layer data */
-	printf("ScOutputAppData %d\n",ScOutputAppData());
-	printf("ScVerboseByteDump %d\n",ScVerboseByteDump());
     if (ScOutputAppData() && !ScVerboseByteDump())
     {
-		printf("ScOutputCharData %d\n",ScOutputCharData());
         if (ScOutputCharData())
         {
             PrintCharData(fp, (char*) p->data, p->dsize);

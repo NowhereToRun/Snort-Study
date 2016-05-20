@@ -2953,7 +2953,6 @@ void DecodeICMP(const uint8_t * pkt, const uint32_t len, Packet * p)
     {
         case ICMP_ECHO:
             ICMP4AddrTests(p);
-			printf("Here\n");
         // fall through ...
 
         case ICMP_ECHOREPLY:
