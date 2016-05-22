@@ -1858,7 +1858,6 @@ static void PrintPacket(Packet *p)
 	} 
     if (p->iph != NULL)
     {
-		printf("Here\n\n");
         PrintIPPkt(stdout, GET_IPH_PROTO((p)), p);
     }
 #ifndef NO_NON_ETHER_DECODER
