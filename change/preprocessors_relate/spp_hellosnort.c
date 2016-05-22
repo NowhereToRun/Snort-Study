@@ -53,6 +53,7 @@
  */
 #include "spp_hellosnort.h"
 #define  PROTO_MASK 0x0001
+
 /*
  * define any needed data structs for things like configuration
  */
@@ -76,7 +77,12 @@ static void ParseTemplateArgs(char *);
 static void HelloSnortFunct(Packet *);
 static void PreprocCleanExitFunction(int, void *);
 static void PreprocRestartFunction(int, void *);
-//static void helloSnortreloadFuction(char *args);
+
+#ifdef SNORT_RELOAD
+static void HelloSnortReloadFuction(struct _SnortConfig *, char *, void **);
+//static void * BoReloadSwap(struct _SnortConfig *, void *);
+//static void BoReloadSwapFree(void *);
+#endif
 /*
  * Function: SetupHelloSnort()
  *
@@ -95,19 +101,12 @@ void SetupHelloSnort()
      * link the preprocessor keyword to the init function in 
      * the preproc list 
      */
-	 /*
+
 	#ifndef SNORT_RELOAD
 		RegisterPreprocessor("Hello_Snort", HelloSnortInit);
 	#else
-		RegisterPreprocessor("Hello_Snort", HelloSnortInit,
-                         helloSnortreloadFuction, NULL, NULL);
+		RegisterPreprocessor("Hello_Snort", HelloSnortInit,HelloSnortReloadFuction,NULL, NULL, NULL);
 	#endif
-	*/
-	RegisterPreprocessor("Hello_Snort", HelloSnortInit,NULL,NULL,NULL,NULL);
-    printf("now call the setupHelloSnort <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");	
-    //DEBUG_WRAP(DebugMessage(DEBUG_PLUGIN,"Preprocessor: HelloSnort is setup...\n"););
-
-    //RegisterPreprocessor("keyword", HelloSnortInit);
 
     //DebugMessage(DEBUG_PLUGIN,"Preprocessor: Template is setup...\n");
 }
@@ -127,7 +126,6 @@ void SetupHelloSnort()
 static void HelloSnortInit(struct _SnortConfig *sc,u_char *args)
 {
     //DebugMessage(DEBUG_PLUGIN,"Preprocessor: Template Initialized\n");
-	printf("HelloSnortInit ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^is setup");
     /* 
      * parse the argument list from the rules file 
      */
@@ -140,7 +138,8 @@ static void HelloSnortInit(struct _SnortConfig *sc,u_char *args)
     /* 
      * Set the preprocessor function into the function list 
      */
-    AddFuncToPreprocList(sc,HelloSnortFunct,PRIORITY_NETWORK, PP_HELLO_SNORT, PROTO_MASK);
+    AddFuncToPreprocList(sc,HelloSnortFunct,0x01, PP_HELLO_SNORT, PROTO_MASK);
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^HelloSnortInit ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^is setup\n\n");
     //AddFuncToCleanExitList(PreprocCleanExitFunction, NULL);
     //AddFuncToRestartList(PreprocRestartFunction, NULL);
 }
@@ -212,12 +211,12 @@ static void PreprocCleanExitFunction(int signal, void *data)
        /* clean exit code goes here */
 }
 
-/*
-static void helloSnortreloadFuction(char *args)
-{
-	printf("call the reload  hellosnort");
 
-} */
+
+static void HelloSnortReloadFuction(struct _SnortConfig *sc, char *args, void **new_config)
+{
+	printf("Call the reload  hellosnort\n\n\n");
+} 
 
 /* 
  * Function: PreprocRestartFunction(int, void *)
