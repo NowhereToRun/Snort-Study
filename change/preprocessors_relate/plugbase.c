@@ -984,13 +984,10 @@ PreprocEvalFuncNode * AddFuncToPreprocList(SnortConfig *sc, PreprocEvalFunc pp_e
     node->preproc_id = preproc_id;
     node->preproc_bit = (UINT64_C(1) << preproc_id);
     node->proto_mask = proto_mask;
-
+	
     p->num_preprocs++;
     p->preproc_proto_mask |= proto_mask;
     p->preproc_bit_mask |= node->preproc_bit;
-	printf("node->priority %d\n",node->priority);
-	printf("node->preproc_id %d\n",node->preproc_id);
-	printf("p->num_preprocs %d\n",p->num_preprocs);
     return node;
 }
 

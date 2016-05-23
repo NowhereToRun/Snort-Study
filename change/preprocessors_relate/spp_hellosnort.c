@@ -52,7 +52,6 @@
  * to include the header file in plugbase.h too!
  */
 #include "spp_hellosnort.h"
-#define  PROTO_MASK 0x0001
 
 /*
  * define any needed data structs for things like configuration
@@ -138,7 +137,7 @@ static void HelloSnortInit(struct _SnortConfig *sc,u_char *args)
     /* 
      * Set the preprocessor function into the function list 
      */
-    AddFuncToPreprocList(sc,HelloSnortFunct,0x01, PP_HELLO_SNORT, PROTO_MASK);
+    AddFuncToPreprocList(sc,HelloSnortFunct,0x01, PP_HELLO_SNORT, PROTO_BIT__PROFINET);
 	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^HelloSnortInit ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^is setup\n\n");
     //AddFuncToCleanExitList(PreprocCleanExitFunction, NULL);
     //AddFuncToRestartList(PreprocRestartFunction, NULL);
