@@ -1848,6 +1848,7 @@ typedef struct _Packet
 #define PROTO_BIT__ICMP     0x0010
 #define PROTO_BIT__TEREDO   0x0020
 #define PROTO_BIT__GTP      0x0040
+#define PROTO_BIT__PROFINET 0x0800
 #define PROTO_BIT__OTHER    0x8000
 #define PROTO_BIT__ALL      0xffff
 

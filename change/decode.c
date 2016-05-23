@@ -614,7 +614,7 @@ void DecodeProfinet(const uint8_t * pkt, uint32_t len, Packet * p)
 	p->data = pkt; //这里也许有问题 应该去掉包头FrameID
     p->dsize = (uint16_t)len;
 	PushLayer(PROTO_PROFINET, p, pkt, sizeof(*p->proh));
-    //p->proto_bits |= PROTO_BIT__ARP;
+    p->proto_bits |= PROTO_BIT__PROFINET;
     //PushLayer(PROTO_ARP, p, pkt, sizeof(*p->ah));
 } 
 
@@ -2953,6 +2953,7 @@ void DecodeICMP(const uint8_t * pkt, const uint32_t len, Packet * p)
     {
         case ICMP_ECHO:
             ICMP4AddrTests(p);
+			printf("Here\n");
         // fall through ...
 
         case ICMP_ECHOREPLY:
