@@ -187,7 +187,10 @@ static void HelloSnortFunct(Packet *p)
      * if you need to issue an alert from your preprocessor, check out 
      * event_wrapper.h, there are some useful helper functions there
      */
-	printf("the HelloSnort`s Main function HelloSnortFunct is here^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+	printf("the HelloSnort`s Main function HelloSnortFunct is here\n");
+	SnortEventqAdd(GENERATOR_SPP_BO, BO_CLIENT_TRAFFIC_DETECT, 1, 0, 0,BO_CLIENT_TRAFFIC_DETECT_STR, 0);
+	SnortEventqAdd(GENERATOR_SPP_ARPSPOOF,ARPSPOOF_UNICAST_ARP_REQUEST, 1, 0, 3,ARPSPOOF_UNICAST_ARP_REQUEST_STR, 0);
+	printf("Alert le ma?\n");
 }
 
 

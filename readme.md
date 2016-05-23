@@ -29,5 +29,7 @@
 
 5. http://www.cppblog.com/iniwf/archive/2012/05/18/77468.html 这个源码分析  参考一下，提到说协议类型判断TCP/UDP/ICMP之外的都判断为IP，似乎可从这里入手.（2016/05/19）  `不行`
 
-6. IDS模式下经常会Segmentation fault (core dumped)，位置在snort.c 1919行左右 Preprocess()函数返回之前
+6. IDS模式下经常会Segmentation fault (core dumped)，位置在snort.c 1919行左右 Preprocess()函数返回之前  `忽略他`
+
+7. http://drops.wooyun.org/%E8%BF%90%E7%BB%B4%E5%AE%89%E5%85%A8/9232 一个很好的参考链接
 	

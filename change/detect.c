@@ -110,7 +110,6 @@ static inline bool processDecoderAlertsActionQ( Packet *p )
 
 static void DispatchPreprocessors( Packet *p, tSfPolicyId policy_id, SnortPolicy *policy )
 {
-	printf("Jin Lai Le Me?\n");
     SessionControlBlock *scb = NULL;
     PreprocEvalFuncNode *ppn;
     PreprocEnableMask pps_enabled_foo;
@@ -133,18 +132,19 @@ static void DispatchPreprocessors( Packet *p, tSfPolicyId policy_id, SnortPolicy
     do {
         ppn = p->cur_pp;
         p->cur_pp = ppn->next;
-
+		/*
 		printf("1 ---> %d\n",p->dsize == 0 && ppn->priority >= PRIORITY_APPLICATION);
 		printf("2 ---> %d\n",preprocHandlesProto( p, ppn ) && IsPreprocessorEnabled( p, ppn->preproc_bit ));
-		printf("	2.1 ---> 0x%x\n",p->proto_bits);
-		printf("	2.2 ---> 0x%x\n",ppn->proto_mask);
+		printf("	p->proto_bits ---> 0x%x\n",p->proto_bits);
+		printf("	ppn->proto_mask ---> 0x%x\n",ppn->proto_mask);
 		printf("	preprocHandlesProto ---> %d\n",preprocHandlesProto( p, ppn ));
 		printf("	p->preprocessor_bits ---> 0x%x\n",p->preprocessor_bits);
-		printf("	ppn->preproc_bit ---> 0x%x\n", ppn->preproc_bit);
+		printf("	ppn->preproc_bit ---> 0x%lx\n", ppn->preproc_bit);
 		printf("	IsPreprocessorEnabled ---> %d\n", IsPreprocessorEnabled( p, ppn->preproc_bit ));
 		printf("3 ---> %d\n",!alerts_processed && ( p->ips_os_selected || ppn->preproc_id == PP_FW_RULE_ENGINE ));
 		printf("4 ---> %d\n",scb == NULL && p->ssnptr != NULL);
 		printf("5 ---> %d\n",scb != NULL && pps_enabled_foo != scb->enabled_pps);
+		*/
         // if packet has no data and we are up to APP preprocs then get out
         if( p->dsize == 0 && ppn->priority >= PRIORITY_APPLICATION )
             break;
