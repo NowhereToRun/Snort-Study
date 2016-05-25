@@ -1353,10 +1353,11 @@ void PrintProfinetHeader(FILE * fp, Packet * p)
         pszProtComment  = "0xFF90-0xFFFF: reserved ID";
         bCyclic         = 0;
     }
-    fprintf(fp, "PROFINET %s, %s%s\nID:0x%04x, %s",
+    fprintf(fp, "PROFINET %s, %s%s, ProfinetLen:%d\nID:0x%04x, %s",
             pszProtSummary,
             pszProtAddInfo,
 			pszProtShort,
+			p->dsize,
             frame_id,
             pszProtComment
             );

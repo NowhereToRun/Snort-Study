@@ -127,7 +127,6 @@ static void DispatchPreprocessors( Packet *p, tSfPolicyId policy_id, SnortPolicy
     }
 
     pps_enabled_foo = policy->pp_enabled[ p->dp ] | policy->pp_enabled[ p->sp ];
-    printf("pps_enabled_foo 0x%d----------------------------\n",pps_enabled_foo);
 	EnablePreprocessors( p, pps_enabled_foo );
     do {
         ppn = p->cur_pp;

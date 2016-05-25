@@ -3,14 +3,6 @@
 
 /* spp_template 
  * 
- * Purpose:
- *
- * Preprocessors perform some function *once* for *each* packet.  This is
- * different from detection plugins, which are accessed depending on the
- * standard rules.  When adding a plugin to the system, be sure to 
- * add the "Setup" function to the InitPreprocessors() function call in 
- * plugbase.c!
- *
  * Arguments:
  *   
  * This is the list of arguements that the plugin can take at the 
@@ -20,10 +12,6 @@
  *
  * What the preprocessor does.  Check out some of the default ones 
  * (e.g. spp_frag2) for a good example of this description.
- *
- * Comments:
- *
- * Any comments?
  *
  */
 
@@ -79,8 +67,6 @@ static void PreprocRestartFunction(int, void *);
 
 #ifdef SNORT_RELOAD
 static void HelloSnortReloadFuction(struct _SnortConfig *, char *, void **);
-//static void * BoReloadSwap(struct _SnortConfig *, void *);
-//static void BoReloadSwapFree(void *);
 #endif
 /*
  * Function: SetupHelloSnort()
@@ -188,9 +174,21 @@ static void HelloSnortFunct(Packet *p)
      * event_wrapper.h, there are some useful helper functions there
      */
 	printf("the HelloSnort`s Main function HelloSnortFunct is here\n");
-	SnortEventqAdd(GENERATOR_SPP_BO, BO_CLIENT_TRAFFIC_DETECT, 1, 0, 0,BO_CLIENT_TRAFFIC_DETECT_STR, 0);
-	SnortEventqAdd(GENERATOR_SPP_ARPSPOOF,ARPSPOOF_UNICAST_ARP_REQUEST, 1, 0, 3,ARPSPOOF_UNICAST_ARP_REQUEST_STR, 0);
-	printf("Alert le ma?\n");
+	uint8_t data_status = p->data[44];
+	printf("0x%x\n",data_status);
+	int a[8],i;
+	for (i = 0; i != 8; ++i)
+	{
+		a[8 - 1 - i] = data_status % 2;
+		data_status /= 2;
+	}
+	for (i = 0; i != 8; ++i)
+	{
+		printf("%d ",a[i]);
+	}
+	printf("\n");
+	//SnortEventqAdd(GENERATOR_SPP_BO, BO_CLIENT_TRAFFIC_DETECT, 1, 0, 0,BO_CLIENT_TRAFFIC_DETECT_STR, 0);
+	
 }
 
 
