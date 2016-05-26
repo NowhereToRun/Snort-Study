@@ -91,34 +91,19 @@ static void PreprocRestartFunction(int, void *);
 #ifdef SNORT_RELOAD
 static void HelloSnortReloadFuction(struct _SnortConfig *, char *, void **);
 #endif
-/*
- * Function: SetupHelloSnort()
- *
- * Purpose: Registers the preprocessor keyword and initialization 
- *          function into the preprocessor list.  This is the function that
- *          gets called from InitPreprocessors() in plugbase.c.
- *
- * Arguments: None.
- *
- * Returns: void function
- *
- */
+
 void SetupHelloSnort()
 {
     /* 
      * link the preprocessor keyword to the init function in 
      * the preproc list 
      */
-
 	#ifndef SNORT_RELOAD
 		RegisterPreprocessor("Hello_Snort", HelloSnortInit);
 	#else
 		RegisterPreprocessor("Hello_Snort", HelloSnortInit,HelloSnortReloadFuction,NULL, NULL, NULL);
 	#endif
-
-    //DebugMessage(DEBUG_PLUGIN,"Preprocessor: Template is setup...\n");
 }
-
 
 /*
  * Function: HelloSnortInit(u_char *)
@@ -133,7 +118,6 @@ void SetupHelloSnort()
  */
 static void HelloSnortInit(struct _SnortConfig *sc,u_char *args)
 {
-    //DebugMessage(DEBUG_PLUGIN,"Preprocessor: Template Initialized\n");
     /* 
      * parse the argument list from the rules file 
      */
@@ -239,7 +223,8 @@ static void HelloSnortFunct(Packet *p)
 		SnortEventqAdd(GENERATOR_SPP_BO, BO_CLIENT_TRAFFIC_DETECT, 1, 0, 0,BO_CLIENT_TRAFFIC_DETECT_STR, 0);
 	}
 	
-	if(idx == NULL)
+	PacketInfoList *tmp = idx;
+	if(tmp == NULL)
 	{
 		printf("Init\n");
 		idx = (PacketInfoList *)calloc(1,sizeof(PacketInfoList));
@@ -247,9 +232,9 @@ static void HelloSnortFunct(Packet *p)
 		strcpy(idx->ether_dst,p->eh->ether_dst);
 		strcpy(idx->ether_src,p->eh->ether_src); 
 		idx->count = 1;
-		printf("%02X:%02X:%02X:%02X:%02X:%02X -> ", p->eh->ether_src[0],
-            p->eh->ether_src[1], p->eh->ether_src[2], p->eh->ether_src[3],
-            p->eh->ether_src[4], p->eh->ether_src[5]);
+		printf("%02X:%02X:%02X:%02X:%02X:%02X -> ", idx->ether_src[0],
+            idx->ether_src[1], idx->ether_src[2], idx->ether_src[3],
+            idx->ether_src[4], idx->ether_src[5]);
 		printf("%02X:%02X:%02X:%02X:%02X:%02X \n", idx->ether_dst[0],
             idx->ether_dst[1], idx->ether_dst[2], idx->ether_dst[3],
             idx->ether_dst[4], idx->ether_dst[5]);
@@ -257,7 +242,6 @@ static void HelloSnortFunct(Packet *p)
 	else 
 	{
 		int end = 1;
-		PacketInfoList *tmp = idx;
 		do{
 			if(!strcmp(tmp->ether_dst,p->eh->ether_dst) && !strcmp(tmp->ether_src,p->eh->ether_src))
 			{
@@ -272,12 +256,11 @@ static void HelloSnortFunct(Packet *p)
 		{
 			printf("Not Equal\n");
 			PacketInfoList *node = (PacketInfoList *)calloc(1,sizeof(PacketInfoList));
-			node->next = NULL;
+			node->next = idx;
 			strcpy(node->ether_dst,p->eh->ether_dst);
 			strcpy(node->ether_src,p->eh->ether_src); 
 			node->count = 1;
-			printf("aaaaaaaaa\n");
-			tmp->next = node;
+			idx = node;
 		}
 	}	
 	PrintTotal();
