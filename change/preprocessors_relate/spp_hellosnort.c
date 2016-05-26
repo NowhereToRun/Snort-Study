@@ -46,15 +46,38 @@
  */
 typedef struct _TemplateData
 {
+	uint64_t count;
     /* Your struct members here */
 } TemplateData;
+
+typedef struct _DataStatus
+{
+	uint8_t Ignore;
+	uint8_t Reserved_2;
+	uint8_t StationProblemIndicator;
+	uint8_t ProviderState;
+	uint8_t Reserved_1;
+	uint8_t DataValid;
+	uint8_t Redundancy;
+	uint8_t State;
+} DataStatus;
+
+typedef struct _PacketInfoList
+{
+	uint8_t ether_dst[6];
+	uint8_t ether_src[6];
+    uint64_t count;
+	struct _PacketInfoList *next;
+} PacketInfoList;
+
 
 /* 
  * If you need to instantiate the preprocessor's 
  * data structure, do it here 
  */
 TemplateData SomeData;
-
+DataStatus PacketDataStatus;
+PacketInfoList *idx;
 /* 
  * function prototypes go here
  */
@@ -149,7 +172,22 @@ static void ParseTemplateArgs(char *args)
     /* your parsing function goes here, check out the other spp files
        for examples */
 }
-
+static void PrintTotal()
+{
+	PacketInfoList *tmp = idx;
+	while(tmp != NULL)
+	{
+	    printf("%02X:%02X:%02X:%02X:%02X:%02X -> ", tmp->ether_src[0],
+            tmp->ether_src[1], tmp->ether_src[2], tmp->ether_src[3],
+            tmp->ether_src[4], tmp->ether_src[5]);
+	    printf("%02X:%02X:%02X:%02X:%02X:%02X ", tmp->ether_dst[0],
+            tmp->ether_dst[1], tmp->ether_dst[2], tmp->ether_dst[3],
+            tmp->ether_dst[4], tmp->ether_dst[5]);
+		printf(" Count: %d\n",tmp->count);
+		tmp = tmp->next;
+	}
+	
+}
 
 /*
  * Function: PreprocFunction(Packet *)
@@ -182,13 +220,63 @@ static void HelloSnortFunct(Packet *p)
 		a[8 - 1 - i] = data_status % 2;
 		data_status /= 2;
 	}
-	for (i = 0; i != 8; ++i)
-	{
-		printf("%d ",a[i]);
-	}
-	printf("\n");
-	//SnortEventqAdd(GENERATOR_SPP_BO, BO_CLIENT_TRAFFIC_DETECT, 1, 0, 0,BO_CLIENT_TRAFFIC_DETECT_STR, 0);
+	PacketDataStatus.Ignore = a[0];
+	PacketDataStatus.Reserved_2 = a[1];
+	PacketDataStatus.StationProblemIndicator = a[2];
+	PacketDataStatus.ProviderState = a[3];
+	PacketDataStatus.Reserved_1 = a[4];
+	PacketDataStatus.DataValid = a[5];
+	PacketDataStatus.Redundancy = a[6];
+	PacketDataStatus.State = a[7];
 	
+	PacketInfoList *node;
+	if (PacketDataStatus.Reserved_2 || PacketDataStatus.Reserved_1)
+	{
+		//Should be zero
+		SnortEventqAdd(GENERATOR_SPP_BO, BO_CLIENT_TRAFFIC_DETECT, 1, 0, 0,BO_CLIENT_TRAFFIC_DETECT_STR, 0);
+	}
+	
+	if(idx == NULL)
+	{
+		printf("Init\n");
+		idx = (PacketInfoList *)calloc(1,sizeof(PacketInfoList));
+		idx->next = NULL;
+		strcpy(idx->ether_dst,p->eh->ether_dst);
+		strcpy(idx->ether_src,p->eh->ether_src); 
+		idx->count = 1;
+		printf("%02X:%02X:%02X:%02X:%02X:%02X -> ", p->eh->ether_src[0],
+            p->eh->ether_src[1], p->eh->ether_src[2], p->eh->ether_src[3],
+            p->eh->ether_src[4], p->eh->ether_src[5]);
+		printf("%02X:%02X:%02X:%02X:%02X:%02X \n", idx->ether_dst[0],
+            idx->ether_dst[1], idx->ether_dst[2], idx->ether_dst[3],
+            idx->ether_dst[4], idx->ether_dst[5]);
+	}
+	else 
+	{
+		int end = 1;
+		PacketInfoList *tmp = idx;
+		do{
+			if(!strcmp(tmp->ether_dst,p->eh->ether_dst) && !strcmp(tmp->ether_src,p->eh->ether_src))
+			{
+				printf("Equal\n");
+				tmp->count++;
+				end = 0;
+				break;
+			}
+			tmp = tmp -> next;
+		} while(tmp != NULL);
+		if(end)
+		{
+			printf("Not Equal\n");
+			node = (PacketInfoList *)calloc(1,sizeof(PacketInfoList));
+			node->next = NULL;
+			strcpy(node->ether_dst,p->eh->ether_dst);
+			strcpy(node->ether_src,p->eh->ether_src); 
+			node->count = 1;
+			idx->next = node;
+		}
+	}	
+	PrintTotal();
 }
 
 

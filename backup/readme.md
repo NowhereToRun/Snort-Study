@@ -20,3 +20,5 @@
 8. IDS Informer模拟发包
 	
 9. 先在preprocessor中写出来几条简单的入侵检测规则，然后再研究一下在preprocessor中报警。报警这个可以使用别的预处理器的报警id，改变一下输出内容
+
+10. http://my.oschina.net/lopo/blog/265162 	网络测试工具\网络发包工具 备份一下、待检验
