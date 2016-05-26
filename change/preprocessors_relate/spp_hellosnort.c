@@ -175,16 +175,20 @@ static void ParseTemplateArgs(char *args)
 static void PrintTotal()
 {
 	PacketInfoList *tmp = idx;
-	while(tmp != NULL)
+	if(tmp != NULL)
 	{
-	    printf("%02X:%02X:%02X:%02X:%02X:%02X -> ", tmp->ether_src[0],
-            tmp->ether_src[1], tmp->ether_src[2], tmp->ether_src[3],
-            tmp->ether_src[4], tmp->ether_src[5]);
-	    printf("%02X:%02X:%02X:%02X:%02X:%02X ", tmp->ether_dst[0],
-            tmp->ether_dst[1], tmp->ether_dst[2], tmp->ether_dst[3],
-            tmp->ether_dst[4], tmp->ether_dst[5]);
-		printf(" Count: %d\n",tmp->count);
-		tmp = tmp->next;
+		do
+		{
+		    printf("%02X:%02X:%02X:%02X:%02X:%02X -> ", tmp->ether_src[0],
+				tmp->ether_src[1], tmp->ether_src[2], tmp->ether_src[3],
+				tmp->ether_src[4], tmp->ether_src[5]);
+			printf("%02X:%02X:%02X:%02X:%02X:%02X ", tmp->ether_dst[0],
+				tmp->ether_dst[1], tmp->ether_dst[2], tmp->ether_dst[3],
+				tmp->ether_dst[4], tmp->ether_dst[5]);
+			printf(" Count: %d\n",tmp->count);
+			tmp = tmp->next;
+		}
+		while(tmp != NULL);
 	}
 	
 }
@@ -229,7 +233,6 @@ static void HelloSnortFunct(Packet *p)
 	PacketDataStatus.Redundancy = a[6];
 	PacketDataStatus.State = a[7];
 	
-	PacketInfoList *node;
 	if (PacketDataStatus.Reserved_2 || PacketDataStatus.Reserved_1)
 	{
 		//Should be zero
@@ -268,12 +271,13 @@ static void HelloSnortFunct(Packet *p)
 		if(end)
 		{
 			printf("Not Equal\n");
-			node = (PacketInfoList *)calloc(1,sizeof(PacketInfoList));
+			PacketInfoList *node = (PacketInfoList *)calloc(1,sizeof(PacketInfoList));
 			node->next = NULL;
 			strcpy(node->ether_dst,p->eh->ether_dst);
 			strcpy(node->ether_src,p->eh->ether_src); 
 			node->count = 1;
-			idx->next = node;
+			printf("aaaaaaaaa\n");
+			tmp->next = node;
 		}
 	}	
 	PrintTotal();
