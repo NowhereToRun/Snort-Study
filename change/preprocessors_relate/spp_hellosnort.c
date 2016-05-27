@@ -229,23 +229,19 @@ static void HelloSnortFunct(Packet *p)
 		printf("Init\n");
 		idx = (PacketInfoList *)calloc(1,sizeof(PacketInfoList));
 		idx->next = NULL;
-		strcpy(idx->ether_dst,p->eh->ether_dst);
-		strcpy(idx->ether_src,p->eh->ether_src); 
+		for(i=0;i<6;i++)
+		{
+			idx->ether_src[i] = p->eh->ether_src[i];
+			idx->ether_dst[i] = p->eh->ether_dst[i];
+		}
 		idx->count = 1;
-		printf("%02X:%02X:%02X:%02X:%02X:%02X -> ", idx->ether_src[0],
-            idx->ether_src[1], idx->ether_src[2], idx->ether_src[3],
-            idx->ether_src[4], idx->ether_src[5]);
-		printf("%02X:%02X:%02X:%02X:%02X:%02X \n", idx->ether_dst[0],
-            idx->ether_dst[1], idx->ether_dst[2], idx->ether_dst[3],
-            idx->ether_dst[4], idx->ether_dst[5]);
 	}
 	else 
 	{
 		int end = 1;
 		do{
-			if(!strcmp(tmp->ether_dst,p->eh->ether_dst) && !strcmp(tmp->ether_src,p->eh->ether_src))
+			if(!memcmp(tmp->ether_dst,p->eh->ether_dst,6) && !memcmp(tmp->ether_src,p->eh->ether_src,6))
 			{
-				printf("Equal\n");
 				tmp->count++;
 				end = 0;
 				break;
@@ -254,11 +250,13 @@ static void HelloSnortFunct(Packet *p)
 		} while(tmp != NULL);
 		if(end)
 		{
-			printf("Not Equal\n");
 			PacketInfoList *node = (PacketInfoList *)calloc(1,sizeof(PacketInfoList));
 			node->next = idx;
-			strcpy(node->ether_dst,p->eh->ether_dst);
-			strcpy(node->ether_src,p->eh->ether_src); 
+			for(i=0;i<6;i++)
+			{
+				node->ether_src[i] = p->eh->ether_src[i];
+				node->ether_dst[i] = p->eh->ether_dst[i];
+			}
 			node->count = 1;
 			idx = node;
 		}
