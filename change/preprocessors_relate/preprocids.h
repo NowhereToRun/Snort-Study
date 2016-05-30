@@ -76,7 +76,7 @@
 #define PP_FILE_INSPECT           31
 #define PP_NAP_RULE_ENGINE        32
 #define PP_PREFILTER_RULE_ENGINE  33  // used externally
-#define PP_HELLO_SNORT  		  34  // 自己添加的  预处理器标识
+#define PP_Profinet_RT  		  34  // 自己添加的  预处理器标识
 #define PP_MAX                    35
 
 #define PP_ENABLE_ALL (~0)

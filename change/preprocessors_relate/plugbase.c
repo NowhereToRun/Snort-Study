@@ -61,7 +61,7 @@
 #include "preprocessors/spp_sfportscan.h"
 #include "preprocessors/spp_frag3.h"
 #include "preprocessors/spp_normalize.h"
-#include "preprocessors/spp_hellosnort.h"
+#include "preprocessors/spp_profinet.h"
 
 
 /* built-in detection plugins */
@@ -689,7 +689,7 @@ void RegisterPreprocessors(void)
     SetupHttpInspect();
     SetupPerfMonitor();
     SetupSfPortscan();
-    SetupHelloSnort();  //-----------------自己添加的
+    SetupProfinet(); 
 }
 
 /****************************************************************************
