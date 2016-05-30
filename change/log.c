@@ -1156,9 +1156,9 @@ void PrintProfinetHeader(FILE * fp, Packet * p)
     char        szFieldSummary[100];
     int         bCyclic;
 	frame_id = ntohs(p->proh->frame_id);
-	    if (frame_id <= 0x001F) {
+	if (frame_id <= 0x001F) {
         pszProtShort    = "PN-RT";
-        pszProtAddInfo  = "reserved, ";
+        pszProtAddInfo  = "Reserved, ";
         pszProtSummary  = "Real-Time";
         pszProtComment  = "0x0000-0x001F: Reserved ID";
         bCyclic         = 0;
@@ -1170,7 +1170,7 @@ void PrintProfinetHeader(FILE * fp, Packet * p)
         bCyclic         = 0;
     } else if (frame_id <= 0x007F) {
         pszProtShort    = "PN-RT";
-        pszProtAddInfo  = "reserved, ";
+        pszProtAddInfo  = "Reserved, ";
         pszProtSummary  = "Real-Time";
         pszProtComment  = "0x0022-0x007F: Reserved ID";
         bCyclic         = 0;
@@ -1182,7 +1182,7 @@ void PrintProfinetHeader(FILE * fp, Packet * p)
         bCyclic         = 0;
     } else if (frame_id <= 0x00FF) {
         pszProtShort    = "PN-RT";
-        pszProtAddInfo  = "reserved, ";
+        pszProtAddInfo  = "Reserved, ";
         pszProtSummary  = "Real-Time";
         pszProtComment  = "0x0082-0x00FF: Reserved ID";
         bCyclic         = 0;
@@ -1200,7 +1200,7 @@ void PrintProfinetHeader(FILE * fp, Packet * p)
         bCyclic         = 1;
     } else if (frame_id <= 0x7FFF) {
         pszProtShort    = "PN-RT";
-        pszProtAddInfo  = "reserved, ";
+        pszProtAddInfo  = "Reserved, ";
         pszProtSummary  = "Real-Time";
         pszProtComment  = "0x1000-0x7FFF: Reserved ID";
         bCyclic         = 0;
