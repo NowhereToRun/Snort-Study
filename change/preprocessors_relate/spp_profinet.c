@@ -344,7 +344,7 @@ static void ProfinetRTInit(struct _SnortConfig *sc,u_char *args)
      * Set the preprocessor function into the function list 
      */
     AddFuncToPreprocList(sc,ProfinetRTFunct,0x01, PP_Profinet_RT, PROTO_BIT__PROFINET);
-	printf("ProfinetRTInit is setup\n\n");
+	//printf("ProfinetRTInit is setup\n\n");
 	RegisterPreprocStats("Profinet_RT", ProfinetPrintStats);
     //AddFuncToCleanExitList(PreprocCleanExitFunction, NULL);
     //AddFuncToRestartList(PreprocRestartFunction, NULL);
@@ -401,18 +401,19 @@ static void ProfinetRTFunct(Packet *p)
      */
 	printf("the HelloSnort`s Main function ProfinetRTFunct is here\n");
 	SetPactekStatus(p);
-	SnortEventqAdd(146, 1, 1, 0, 0,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0);
 	if (PacketDataStatus.Reserved_2 || PacketDataStatus.Reserved_1)
 	{
 		//Should be zero
-		SnortEventqAdd(146, 1, 1, 0, 0,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0);
+		SnortEventqAdd(146, 1, 1, 0, 0,"Reserved_1!!!!", 0);
 	}	
 	if (!strcmp(PacketDataStatus.pszProtAddInfo,"Reserved, "))
 	{
 		//Reserved FrameID
-		SnortEventqAdd(GENERATOR_SPP_BO, BO_CLIENT_TRAFFIC_DETECT, 1, 0, 0,BO_CLIENT_TRAFFIC_DETECT_STR, 0);
+		SnortEventqAdd(146, 1, 1, 0, 0,"Frame Reserved!!!!", 0);
+
 	}
-	
+	SnortEventqAdd(146, 1, 1, 0, 0,"Non_standard Protocol! Unknown Option (99)", 0);
+	SnortEventqAdd(146, 1, 1, 0, 0,"Non_standard Protocol! DCPBlockLength large than 1430", 0);
 	PacketInfoList *tmp = idx;
 	int i;
 	if(tmp == NULL)

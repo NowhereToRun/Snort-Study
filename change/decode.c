@@ -553,7 +553,6 @@ void UpdateDecodeRulesArray(uint32_t sid, int value, int all_rules)
 // enabled, the normalizer assumes that the encoding is structurally sound
 static inline void PushLayer(PROTO_ID type, Packet* p, const uint8_t* hdr, uint32_t len)
 {
-	printf("PROTO_ID %d\n",type);
     if ( p->next_layer < LAYER_MAX )
     {
         Layer* lyr = p->layers + p->next_layer++;
